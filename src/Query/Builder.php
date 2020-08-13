@@ -2,22 +2,21 @@
 
 namespace Vinelab\NeoEloquent\Query;
 
+use BadMethodCallException;
+use Carbon\Carbon;
 use Closure;
 use Countable;
 use DateTime;
-use Carbon\Carbon;
-use BadMethodCallException;
-use InvalidArgumentException;
-use Vinelab\NeoEloquent\ConnectionInterface;
 use GraphAware\Common\Result\AbstractRecordCursor as Result;
-use Vinelab\NeoEloquent\Eloquent\Collection;
-use Vinelab\NeoEloquent\Query\Grammars\Grammar;
-
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
+use Vinelab\NeoEloquent\ConnectionInterface;
+use Vinelab\NeoEloquent\Eloquent\Collection;
+use Vinelab\NeoEloquent\Query\Grammars\Grammar;
 use Vinelab\NeoEloquent\Traits\ResultTrait;
 
 class Builder implements Countable
@@ -57,42 +56,42 @@ class Builder implements Countable
      *
      * @var array
      */
-    public $matches = array();
+    public $matches = [];
 
     /**
      * The WITH parts of the query.
      *
      * @var array
      */
-    public $with = array();
+    public $with = [];
 
     /**
      * The current query value bindings.
      *
      * @var array
      */
-    protected $bindings = array(
+    protected $bindings = [
         'matches' => [],
-        'select' => [],
-        'join' => [],
-        'where' => [],
-        'having' => [],
-        'order' => [],
-    );
+        'select'  => [],
+        'join'    => [],
+        'where'   => [],
+        'having'  => [],
+        'order'   => [],
+    ];
 
     /**
      * All of the available clause operators.
      *
      * @var array
      */
-    protected $operators = array(
+    protected $operators = [
         '+', '-', '*', '/', '%', '^',    // Mathematical
         '=', '<>', '<', '>', '<=', '>=', // Comparison
         'is null', 'is not null',
         'and', 'or', 'xor', 'not',       // Boolean
         'in', '[x]', '[x .. y]',         // Collection
         '=~',                             // Regular Expression
-    );
+    ];
 
     /**
      * An aggregate function and column to be run.
@@ -350,7 +349,7 @@ class Builder implements Countable
 
         $id = null;
 
-        if ($results instanceof Result && count($results->getRecords())> 0) {
+        if ($results instanceof Result && count($results->getRecords()) > 0) {
             $node = $results->firstRecord()->valueByIndex(0);
             $id = (!$sequence || $sequence == 'id') ? $node->identity() : $node->get($sequence);
         }
@@ -432,9 +431,9 @@ class Builder implements Countable
      * @param mixed  $value
      * @param string $boolean
      *
-     * @return \Vinelab\NeoEloquent\Query\Builder|static
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return \Vinelab\NeoEloquent\Query\Builder|static
      */
     public function where($column, $operator = null, $value = null, $boolean = 'and')
     {
@@ -456,7 +455,7 @@ class Builder implements Countable
         }
 
         if (func_num_args() == 2) {
-            list($value, $operator) = array($operator, '=');
+            list($value, $operator) = [$operator, '='];
         } elseif ($this->invalidOperatorAndValue($operator, $value)) {
             throw new \InvalidArgumentException('Value must be provided.');
         }
@@ -472,7 +471,7 @@ class Builder implements Countable
         // assume that the developer is just short-cutting the '=' operators and
         // we will set the operators to '=' and set the values appropriately.
         if (!in_array(mb_strtolower($operator), $this->operators, true)) {
-            list($value, $operator) = array($operator, '=');
+            list($value, $operator) = [$operator, '='];
         }
 
         // If the value is a Closure, it means the developer is performing an entire
@@ -1011,7 +1010,7 @@ class Builder implements Countable
             if ($segment != 'And' && $segment != 'Or') {
                 $this->addDynamic($segment, $connector, $parameters, $index);
 
-                ++$index;
+                $index++;
             }
 
             // Otherwise, we will store the connector so we know how the next where clause we
@@ -1418,7 +1417,7 @@ class Builder implements Countable
         $results = $this->forPage($page, $perPage)->get($columns);
 
         return new LengthAwarePaginator($results, $total, $perPage, $page, [
-            'path' => Paginator::resolveCurrentPath(),
+            'path'     => Paginator::resolveCurrentPath(),
             'pageName' => $pageName,
         ]);
     }
@@ -1441,7 +1440,7 @@ class Builder implements Countable
         $this->skip(($page - 1) * $perPage)->take($perPage + 1);
 
         return new Paginator($this->get($columns), $perPage, $page, [
-            'path' => Paginator::resolveCurrentPath(),
+            'path'     => Paginator::resolveCurrentPath(),
             'pageName' => $pageName,
         ]);
     }
@@ -1525,7 +1524,7 @@ class Builder implements Countable
                 break;
             }
 
-            ++$page;
+            $page++;
 
             $results = $this->forPage($page, $count)->get();
         }
@@ -1784,9 +1783,9 @@ class Builder implements Countable
      * @param array  $bindings
      * @param string $type
      *
-     * @return $this
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return $this
      */
     public function setBindings(array $bindings, $type = 'where')
     {
@@ -1978,7 +1977,7 @@ class Builder implements Countable
      */
     public function with(array $parts)
     {
-        if($this->isAssocArray($parts)) {
+        if ($this->isAssocArray($parts)) {
             foreach ($parts as $key => $part) {
                 if (!in_array($part, $this->with)) {
                     $this->with[$key] = $part;
@@ -2008,7 +2007,7 @@ class Builder implements Countable
         // bindings are structured in a way that is convenient for building these
         // inserts statements by verifying the elements are actually an array.
         if (!is_array(reset($values))) {
-            $values = array($values);
+            $values = [$values];
         }
 
         // Since every insert gets treated like a batch insert, we will make sure the
@@ -2025,7 +2024,7 @@ class Builder implements Countable
         // We'll treat every insert like a batch insert so we can easily insert each
         // of the records into the database consistently. This will make it much
         // easier on the grammars to just handle one type of record insertion.
-        $bindings = array();
+        $bindings = [];
 
         foreach ($values as $record) {
             $bindings[] = $record;
@@ -2040,7 +2039,7 @@ class Builder implements Countable
 
         $results = $this->connection->insert($cypher, $bindings);
 
-        return !!$results;
+        return (bool) $results;
     }
 
     /**
@@ -2066,7 +2065,7 @@ class Builder implements Countable
      *
      * @return array|static[]
      */
-    public function getFresh($columns = array('*'))
+    public function getFresh($columns = ['*'])
     {
         if (is_null($this->columns)) {
             $this->columns = $columns;
@@ -2115,23 +2114,23 @@ class Builder implements Countable
         $relatedLabels = $related->nodeLabel();
         $parentNode = $this->modelAsNode($parentLabels);
 
-        $this->matches[] = array(
-            'type' => 'Relation',
-            'optional' => $boolean,
-            'property' => $property,
-            'direction' => $direction,
+        $this->matches[] = [
+            'type'         => 'Relation',
+            'optional'     => $boolean,
+            'property'     => $property,
+            'direction'    => $direction,
             'relationship' => $relationship,
-            'parent' => array(
-                'node' => $parentNode,
+            'parent'       => [
+                'node'   => $parentNode,
                 'labels' => $parentLabels,
-            ),
-            'related' => array(
-                'node' => $relatedNode,
+            ],
+            'related' => [
+                'node'   => $relatedNode,
                 'labels' => $relatedLabels,
-            ),
-        );
+            ],
+        ];
 
-        $this->addBinding(array($this->wrap($property) => $value), 'matches');
+        $this->addBinding([$this->wrap($property) => $value], 'matches');
 
         return $this;
     }
@@ -2141,19 +2140,19 @@ class Builder implements Countable
         $parentLabels = $parent->nodeLabel();
         $parentNode = $this->modelAsNode($parentLabels);
 
-        $this->matches[] = array(
-            'type' => 'MorphTo',
-            'optional' => 'and',
-            'property' => $property,
+        $this->matches[] = [
+            'type'      => 'MorphTo',
+            'optional'  => 'and',
+            'property'  => $property,
             'direction' => $direction,
-            'related' => array('node' => $relatedNode),
-            'parent' => array(
-                'node' => $parentNode,
+            'related'   => ['node' => $relatedNode],
+            'parent'    => [
+                'node'   => $parentNode,
                 'labels' => $parentLabels,
-            ),
-        );
+            ],
+        ];
 
-        $this->addBinding(array($property => $value), 'matches');
+        $this->addBinding([$property => $value], 'matches');
 
         return $this;
     }
@@ -2169,7 +2168,7 @@ class Builder implements Countable
      */
     public function percentileDisc($column, $percentile = 0.0)
     {
-        return $this->aggregate(__FUNCTION__, array($column), $percentile);
+        return $this->aggregate(__FUNCTION__, [$column], $percentile);
     }
 
     /**
@@ -2184,7 +2183,7 @@ class Builder implements Countable
      */
     public function percentileCont($column, $percentile = 0.0)
     {
-        return $this->aggregate(__FUNCTION__, array($column), $percentile);
+        return $this->aggregate(__FUNCTION__, [$column], $percentile);
     }
 
     /**
@@ -2196,7 +2195,7 @@ class Builder implements Countable
      */
     public function stdev($column)
     {
-        return $this->aggregate(__FUNCTION__, array($column));
+        return $this->aggregate(__FUNCTION__, [$column]);
     }
 
     /**
@@ -2208,7 +2207,7 @@ class Builder implements Countable
      */
     public function stdevp($column)
     {
-        return $this->aggregate(__FUNCTION__, array($column));
+        return $this->aggregate(__FUNCTION__, [$column]);
     }
 
     /**
@@ -2220,7 +2219,7 @@ class Builder implements Countable
      */
     public function collect($column)
     {
-        $row = $this->aggregate(__FUNCTION__, array($column));
+        $row = $this->aggregate(__FUNCTION__, [$column]);
 
         $collected = [];
 
@@ -2240,7 +2239,7 @@ class Builder implements Countable
      */
     public function countDistinct($column)
     {
-        return (int) $this->aggregate(__FUNCTION__, array($column));
+        return (int) $this->aggregate(__FUNCTION__, [$column]);
     }
 
     /**
@@ -2251,7 +2250,7 @@ class Builder implements Countable
      *
      * @return mixed
      */
-    public function aggregate($function, $columns = array('*'), $percentile = null)
+    public function aggregate($function, $columns = ['*'], $percentile = null)
     {
         $this->aggregate = array_merge([
             'label' => $this->from,
@@ -2271,7 +2270,7 @@ class Builder implements Countable
         $values = $this->getRecordsByPlaceholders($results);
 
         $value = reset($values);
-        if(is_array($value)) {
+        if (is_array($value)) {
             return current($value);
         } else {
             return $value;
@@ -2415,9 +2414,9 @@ class Builder implements Countable
      * @param string $method
      * @param array  $parameters
      *
-     * @return mixed
-     *
      * @throws \BadMethodCallException
+     *
+     * @return mixed
      */
     public function __call($method, $parameters)
     {
@@ -2441,5 +2440,4 @@ class Builder implements Countable
     {
         return is_array($array) && array_keys($array) !== range(0, count($array) - 1);
     }
-
 }

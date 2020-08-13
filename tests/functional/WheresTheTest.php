@@ -3,9 +3,9 @@
 namespace Vinelab\NeoEloquent\Tests\Functional;
 
 use Mockery as M;
-use Vinelab\NeoEloquent\Tests\TestCase;
-use Vinelab\NeoEloquent\Eloquent\Model;
 use Vinelab\NeoEloquent\Eloquent\Collection;
+use Vinelab\NeoEloquent\Eloquent\Model;
+use Vinelab\NeoEloquent\Tests\TestCase;
 
 class User extends Model
 {
@@ -36,35 +36,35 @@ class WheresTheTest extends TestCase
 
         // Setup the data in the database
         $this->ab = User::create([
-            'name' => 'Ey Bee',
+            'name'  => 'Ey Bee',
             'alias' => 'ab',
             'email' => 'ab@alpha.bet',
             'calls' => 10,
         ]);
 
         $this->cd = User::create([
-            'name' => 'See Dee',
+            'name'  => 'See Dee',
             'alias' => 'cd',
             'email' => 'cd@alpha.bet',
             'calls' => 20,
         ]);
 
         $this->ef = User::create([
-            'name' => 'Eee Eff',
+            'name'  => 'Eee Eff',
             'alias' => 'ef',
             'email' => 'ef@alpha.bet',
             'calls' => 30,
         ]);
 
         $this->gh = User::create([
-            'name' => 'Gee Aych',
+            'name'  => 'Gee Aych',
             'alias' => 'gh',
             'email' => 'gh@alpha.bet',
             'calls' => 40,
         ]);
 
         $this->ij = User::create([
-            'name' => 'Eye Jay',
+            'name'  => 'Eye Jay',
             'alias' => 'ij',
             'email' => 'ij@alpha.bet',
             'calls' => 50,
@@ -113,17 +113,17 @@ class WheresTheTest extends TestCase
         $others = User::where('calls', '>', 10)->get();
         $this->assertCount(4, $others);
 
-        $brothers = new Collection(array(
-                                                            $this->cd,
-                                                            $this->ef,
-                                                            $this->gh,
-                                                            $this->ij, ));
+        $brothers = new Collection([
+            $this->cd,
+            $this->ef,
+            $this->gh,
+            $this->ij, ]);
         $this->assertTrue($others->diff($brothers)->isEmpty());
 
         $lastTwo = User::where('calls', '>=', 40)->get();
         $this->assertCount(2, $lastTwo);
 
-        $mothers = new Collection(array($this->gh, $this->ij));
+        $mothers = new Collection([$this->gh, $this->ij]);
         $this->assertTrue($lastTwo->diff($mothers)->isEmpty());
 
         $none = User::where('calls', '>', 9000)->get();
@@ -138,9 +138,9 @@ class WheresTheTest extends TestCase
         $three = User::where('calls', '<=', 30)->get();
         $this->assertCount(3, $three);
 
-        $cocoa = new Collection(array($this->ab,
-                                                            $this->cd,
-                                                            $this->ef, ));
+        $cocoa = new Collection([$this->ab,
+            $this->cd,
+            $this->ef, ]);
         $this->assertTrue($cocoa->diff($three)->isEmpty());
 
         $below = User::where('calls', '<', -100)->get();
@@ -154,11 +154,11 @@ class WheresTheTest extends TestCase
     {
         $notab = User::where('alias', '<>', 'ab')->get();
 
-        $dudes = new Collection(array(
-                                                            $this->cd,
-                                                            $this->ef,
-                                                            $this->gh,
-                                                            $this->ij, ));
+        $dudes = new Collection([
+            $this->cd,
+            $this->ef,
+            $this->gh,
+            $this->ij, ]);
 
         $this->assertCount(4, $notab);
         $this->assertTrue($notab->diff($dudes)->isEmpty());
@@ -168,11 +168,11 @@ class WheresTheTest extends TestCase
     {
         $alpha = User::whereIn('alias', ['ab', 'cd', 'ef', 'gh', 'ij'])->get();
 
-        $crocodile = new Collection(array($this->ab,
-                                                            $this->cd,
-                                                            $this->ef,
-                                                            $this->gh,
-                                                            $this->ij, ));
+        $crocodile = new Collection([$this->ab,
+            $this->cd,
+            $this->ef,
+            $this->gh,
+            $this->ij, ]);
 
         $this->assertTrue($alpha->diff($crocodile)->isEmpty());
     }
@@ -181,11 +181,11 @@ class WheresTheTest extends TestCase
     {
         $alpha = User::whereNotNull('alias')->get();
 
-        $crocodile = new Collection(array($this->ab,
-                                                            $this->cd,
-                                                            $this->ef,
-                                                            $this->gh,
-                                                            $this->ij, ));
+        $crocodile = new Collection([$this->ab,
+            $this->cd,
+            $this->ef,
+            $this->gh,
+            $this->ij, ]);
         $this->assertTrue($alpha->diff($crocodile)->isEmpty());
     }
 
@@ -207,7 +207,7 @@ class WheresTheTest extends TestCase
          * RETURN actor
          */
         $u = User::whereNotIn('alias', ['ab', 'cd', 'ef'])->get();
-        $still = new Collection(array($this->gh, $this->ij));
+        $still = new Collection([$this->gh, $this->ij]);
         $rest = [$this->gh->toArray(), $this->ij->toArray()];
 
         $this->assertCount(2, $u);
@@ -221,13 +221,13 @@ class WheresTheTest extends TestCase
          */
         $this->markTestIncomplete();
 
-        $u = User::whereBetween('id', [$this->ab->id, $this->ij->id])->get()->pluck("id");
+        $u = User::whereBetween('id', [$this->ab->id, $this->ij->id])->get()->pluck('id');
 
-        $mwahaha = new Collection(array($this->ab,
-                                                            $this->cd,
-                                                            $this->ef,
-                                                            $this->gh,
-                                                            $this->ij, ));
+        $mwahaha = new Collection([$this->ab,
+            $this->cd,
+            $this->ef,
+            $this->gh,
+            $this->ij, ]);
         $mwahaha = $mwahaha->pluck('id');
         $this->assertCount(5, $u);
         $this->assertTrue($buddies->diff($mwahaha)->isEmpty());
@@ -243,11 +243,11 @@ class WheresTheTest extends TestCase
             ->get();
 
         $this->assertCount(5, $buddies);
-        $bigBrothers = new Collection(array($this->ab,
-                                                            $this->cd,
-                                                            $this->ef,
-                                                            $this->gh,
-                                                            $this->ij, ));
+        $bigBrothers = new Collection([$this->ab,
+            $this->cd,
+            $this->ef,
+            $this->gh,
+            $this->ij, ]);
         $bigBrothers = $bigBrothers;
         $this->assertTrue($bigBrothers->diff($buddies)->isEmpty());
     }
@@ -257,13 +257,13 @@ class WheresTheTest extends TestCase
         $all = User::whereIn('id', [$this->ab->id, $this->cd->id])
             ->orWhereIn('alias', ['ef', 'gh', 'ij'])->get();
 
-        $padrougas = new Collection(array(
+        $padrougas = new Collection([
             $this->ab,
             $this->cd,
             $this->ef,
             $this->gh,
-            $this->ij
-        ));
+            $this->ij,
+        ]);
         $padrougas = $padrougas;
         $this->assertTrue($padrougas->diff($all)->isEmpty());
     }
@@ -305,7 +305,7 @@ class WheresTheTest extends TestCase
 
         $l = (new User())->getConnection()->getQueryLog();
         $expectedUsers = new Collection(
-            array($this->cd, $this->ef)
+            [$this->cd, $this->ef]
         );
         $this->assertTrue($expectedUsers->diff($users)->isEmpty());
     }

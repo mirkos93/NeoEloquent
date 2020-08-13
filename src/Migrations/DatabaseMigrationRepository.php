@@ -2,10 +2,10 @@
 
 namespace Vinelab\NeoEloquent\Migrations;
 
-use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Illuminate\Database\ConnectionResolverInterface;
-use Vinelab\NeoEloquent\Schema\Builder as SchemaBuilder;
+use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 use Vinelab\NeoEloquent\Eloquent\Model;
+use Vinelab\NeoEloquent\Schema\Builder as SchemaBuilder;
 
 class DatabaseMigrationRepository implements MigrationRepositoryInterface
 {
@@ -43,7 +43,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getRan()
     {
@@ -53,7 +53,8 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     /**
      * Get list of migrations.
      *
-     * @param  int  $steps
+     * @param int $steps
+     *
      * @return array
      */
     public function getMigrations($steps)
@@ -71,11 +72,12 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     public function getMigrationBatches()
     {
         $query = $this->label()->where('batch', '>=', '1');
+
         return $query->orderBy('migration', 'asc')->pluck('batch', 'migration')->all();
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getLast()
     {
@@ -83,17 +85,17 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function log($file, $batch)
     {
-        $record = array('migration' => $file, 'batch' => $batch);
+        $record = ['migration' => $file, 'batch' => $batch];
 
         $this->model->create($record);
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function delete($migration)
     {
@@ -101,7 +103,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getNextBatchNumber()
     {
@@ -109,7 +111,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getLastBatchNumber()
     {
@@ -117,15 +119,14 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function createRepository()
     {
-        return;
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function repositoryExists()
     {
@@ -139,7 +140,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
      */
     protected function label()
     {
-        return $this->getConnection()->table(array($this->getLabel()));
+        return $this->getConnection()->table([$this->getLabel()]);
     }
 
     /**
@@ -163,7 +164,7 @@ class DatabaseMigrationRepository implements MigrationRepositoryInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function setSource($name)
     {

@@ -2,25 +2,10 @@
 
 namespace Vinelab\NeoEloquent\Eloquent;
 
-use DateTime;
-use Exception;
 use ArrayAccess;
 use Carbon\Carbon;
-use LogicException;
-use JsonSerializable;
-use Vinelab\NeoEloquent\Eloquent\Builder as EloquentBuilder;
-use Vinelab\NeoEloquent\Eloquent\Relations\BelongsTo;
-use Vinelab\NeoEloquent\Eloquent\Relations\BelongsToMany;
-use Vinelab\NeoEloquent\Eloquent\Relations\HasMany;
-use Vinelab\NeoEloquent\Eloquent\Relations\HasOne;
-use Vinelab\NeoEloquent\Eloquent\Relations\HyperMorph;
-use Vinelab\NeoEloquent\Eloquent\Relations\MorphMany;
-use Vinelab\NeoEloquent\Eloquent\Relations\MorphTo;
-use Vinelab\NeoEloquent\Eloquent\Relations\MorphedByOne;
-use Vinelab\NeoEloquent\Eloquent\Relations\Relation;
-use Vinelab\NeoEloquent\Helpers;
-use Vinelab\NeoEloquent\Query\Builder as QueryBuilder;
-
+use DateTime;
+use Exception;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Queue\QueueableEntity;
 use Illuminate\Contracts\Routing\UrlRoutable;
@@ -29,6 +14,20 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use JsonSerializable;
+use LogicException;
+use Vinelab\NeoEloquent\Eloquent\Builder as EloquentBuilder;
+use Vinelab\NeoEloquent\Eloquent\Relations\BelongsTo;
+use Vinelab\NeoEloquent\Eloquent\Relations\BelongsToMany;
+use Vinelab\NeoEloquent\Eloquent\Relations\HasMany;
+use Vinelab\NeoEloquent\Eloquent\Relations\HasOne;
+use Vinelab\NeoEloquent\Eloquent\Relations\HyperMorph;
+use Vinelab\NeoEloquent\Eloquent\Relations\MorphedByOne;
+use Vinelab\NeoEloquent\Eloquent\Relations\MorphMany;
+use Vinelab\NeoEloquent\Eloquent\Relations\MorphTo;
+use Vinelab\NeoEloquent\Eloquent\Relations\Relation;
+use Vinelab\NeoEloquent\Helpers;
+use Vinelab\NeoEloquent\Query\Builder as QueryBuilder;
 
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable, QueueableEntity, UrlRoutable
 {
@@ -324,16 +323,14 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
-    * @override
-    * Override eloquents saveOrFail to avoid falling back on parent save or fail (that assumes a sql db)
-    */
-    
+     * @override
+     * Override eloquents saveOrFail to avoid falling back on parent save or fail (that assumes a sql db)
+     */
     public function saveOrFail(array $options = [])
     {
-    
         return $this->save($options);
     }
-    
+
     /**
      * Register a new global scope on the model.
      *
@@ -407,9 +404,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @param array $attributes
      *
-     * @return $this
-     *
      * @throws \Illuminate\Database\Eloquent\MassAssignmentException
+     *
+     * @return $this
      */
     public function fill(array $attributes)
     {
@@ -844,7 +841,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // Since there was no label for this model
         // we take the fully qualified (namespaced) class name and
         // pluck out backslashes to get a clean 'WordsUp' class name and use it as default
-        return array(str_replace('\\', '', get_class($this)));
+        return [str_replace('\\', '', get_class($this))];
     }
 
     /**
@@ -1226,7 +1223,12 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // there are multiple types in the morph and we can't use single queries.
         if (is_null($class = $this->$type)) {
             return new MorphTo(
-                $this->newQuery(), $this, $id, null, $type, $name
+                $this->newQuery(),
+                $this,
+                $id,
+                null,
+                $type,
+                $name
             );
         }
 
@@ -1237,7 +1239,12 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             $instance = new $class();
 
             return new MorphTo(
-                with($instance)->newQuery(), $this, $id, $instance->getKeyName(), $type, $name
+                with($instance)->newQuery(),
+                $this,
+                $id,
+                $instance->getKeyName(),
+                $type,
+                $name
             );
         }
     }
@@ -1279,7 +1286,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         foreach ($instance->whereIn($key, $ids)->get() as $model) {
             if ($model->delete()) {
-                ++$count;
+                $count++;
             }
         }
 
@@ -1289,9 +1296,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Delete the model from the database.
      *
-     * @return bool|null
-     *
      * @throws \Exception
+     *
+     * @return bool|null
      */
     public function delete()
     {
@@ -2067,7 +2074,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         $relations = [];
 
         foreach ($this->getRelations() as $key => $relation) {
-            if (! method_exists($this, $key)) {
+            if (!method_exists($this, $key)) {
                 continue;
             }
 
@@ -2088,6 +2095,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         return array_unique($relations);
     }
+
     /**
      * Get the primary key for the model.
      *
@@ -2202,7 +2210,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
                         return false;
                     }
 
-                    if($model->exists) {
+                    if ($model->exists) {
                         $existingModelsKeys[] = $model->getKey();
                     }
 
@@ -2237,7 +2245,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
                 $model->finishSave($options);
                 // var_dump(get_class($model), 'saved');
 
-                if(!in_array($model->getKey(), $existingModelsKeys)) {
+                if (!in_array($model->getKey(), $existingModelsKeys)) {
                     $model->fireModelEvent('created', false);
                 }
             });
@@ -2253,6 +2261,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         return $created;
     }
+
     /**
      * Get the polymorphic relationship columns.
      *
@@ -2268,7 +2277,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         $id = $this->getkeyname();
 
-        return array($type, $id);
+        return [$type, $id];
     }
 
     /**
@@ -2651,7 +2660,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             }
 
             $attributes[$key] = $this->mutateAttributeForArray(
-                $key, $attributes[$key]
+                $key,
+                $attributes[$key]
             );
         }
 
@@ -2665,7 +2675,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             }
 
             $attributes[$key] = $this->castAttribute(
-                $key, $attributes[$key]
+                $key,
+                $attributes[$key]
             );
         }
 
@@ -2871,9 +2882,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      *
      * @param string $method
      *
-     * @return mixed
-     *
      * @throws \LogicException
+     *
+     * @return mixed
      */
     protected function getRelationshipFromMethod($method)
     {
@@ -2950,7 +2961,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     {
         if ($this->hasCast($key)) {
             return in_array(
-                $this->getCastType($key), ['array', 'json', 'object', 'collection'], true
+                $this->getCastType($key),
+                ['array', 'json', 'object', 'collection'],
+                true
             );
         }
 
@@ -3367,9 +3380,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Determine whether a relationship exists on this model.
      *
-     * @param  string  $relation
+     * @param string $relation
      *
-     * @return boolean
+     * @return bool
      */
     public function hasRelation($relation)
     {
@@ -3767,12 +3780,12 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Retrieve the model for a bound value.
      *
-     * @param  mixed  $value
+     * @param mixed $value
+     *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
     public function resolveRouteBinding($value)
     {
         return $this->where($this->getRouteKeyName(), $value)->first();
     }
-
 }
