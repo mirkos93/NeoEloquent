@@ -324,6 +324,17 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
+    * @override
+    * Override eloquents saveOrFail to avoid falling back on parent save or fail (that assumes a sql db)
+    */
+    
+    public function saveOrFail(array $options = [])
+    {
+    
+        return $this->save($options);
+    }
+    
+    /**
      * Register a new global scope on the model.
      *
      * @param \Vinelab\NeoEloquent\Eloquent\ScopeInterface $scope
