@@ -21,7 +21,7 @@ class NeoEloquentServiceProvider extends ServiceProvider
      * @var array
      */
     protected $components = [
-        'Migration',
+        //'Migration',
     ];
 
     /**
