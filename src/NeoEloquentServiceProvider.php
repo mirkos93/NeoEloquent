@@ -21,7 +21,7 @@ class NeoEloquentServiceProvider extends ServiceProvider
      * @var array
      */
     protected $components = [
-        //'Migration',
+        'Migration',
     ];
 
     /**
@@ -58,7 +58,7 @@ class NeoEloquentServiceProvider extends ServiceProvider
             }
         });
 
-        //$this->registerComponents();
+        $this->registerComponents();
     }
 
     /**
@@ -78,10 +78,10 @@ class NeoEloquentServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    /*protected function registerMigration()
+    protected function registerMigration()
     {
         $this->app->register('Vinelab\NeoEloquent\MigrationServiceProvider');
-    }*/
+    }
 
     /**
      * Get the services provided by the provider.
