@@ -58,7 +58,7 @@ class NeoEloquentServiceProvider extends ServiceProvider
             }
         });
 
-        $this->registerComponents();
+        //$this->registerComponents();
     }
 
     /**
