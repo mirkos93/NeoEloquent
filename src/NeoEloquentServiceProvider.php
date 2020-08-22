@@ -78,10 +78,10 @@ class NeoEloquentServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerMigration()
+    /*protected function registerMigration()
     {
         $this->app->register('Vinelab\NeoEloquent\MigrationServiceProvider');
-    }
+    }*/
 
     /**
      * Get the services provided by the provider.
