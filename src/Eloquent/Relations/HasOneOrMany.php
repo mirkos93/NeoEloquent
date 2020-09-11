@@ -538,7 +538,7 @@ abstract class HasOneOrMany extends IlluminateHasOneOrMany implements RelationIn
      */
     protected function guessInverseRelation()
     {
-        return camel_case(str_plural(class_basename($this->getParent())));
+        return Illuminate\Support\Str::camel(str_plural(class_basename($this->getParent())));
     }
 
     /**
