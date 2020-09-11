@@ -1,7 +1,7 @@
 <?php
 
 namespace Vinelab\NeoEloquent\Eloquent\Relations;
-
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -538,7 +538,7 @@ abstract class HasOneOrMany extends IlluminateHasOneOrMany implements RelationIn
      */
     protected function guessInverseRelation()
     {
-        return Illuminate\Support\Str::camel(str_plural(class_basename($this->getParent())));
+        return Str::camel(str_plural(class_basename($this->getParent())));
     }
 
     /**
