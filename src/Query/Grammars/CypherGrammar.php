@@ -3,6 +3,7 @@
 namespace Vinelab\NeoEloquent\Query\Grammars;
 
 use Illuminate\Database\Query\Builder;
+use Vinelab\NeoEloquent\Exceptions\Exception;
 use Vinelab\NeoEloquent\Exceptions\InvalidCypherGrammarComponentException;
 
 class CypherGrammar extends Grammar
@@ -92,7 +93,7 @@ class CypherGrammar extends Grammar
 
         // Let's make sure this is a proprietary component that we support
         if (!in_array($component, $components)) {
-            throw new InvalidCypherGrammarComponentException($component);
+            throw new Exception($component);
         }
 
         // To compile the query, we'll spin through each component of the query and
@@ -293,7 +294,7 @@ class CypherGrammar extends Grammar
      *
      * @return string
      */
-    protected function compileWheres(Builder $query)
+    public function compileWheres(Builder $query)
     {
         $cypher = [];
 
